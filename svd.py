@@ -1,43 +1,43 @@
 import cv2
 import numpy as np
 
+num_sv = 50
+
 
 def reconstruct(img):
     u, s, vh = np.linalg.svd(img)
-    e = np.eye(681, 492)
+    e = np.eye(height, weight)
     d = np.zeros(s.shape)
-    # d[0:20] = s[0:20]
-    d[0:100] = s[0:100]
+    d[0:num_sv] = s[0:num_sv]
     s = e * d
 
-    #print(d.shape)
-    #print(vh.shape)
+    ret = np.matmul(np.matmul(u, s), vh)
+    val_min = np.min(ret)
+    val_max = np.max(ret)
+    ret = (ret - val_min) / (val_max - val_min) * 255
+    ret = ret.astype(np.uint8)
+    return ret
 
-    re = np.matmul(np.matmul(u, s), vh)
-    min = np.min(re)
-    max = np.max(re)
-    re = (re - min) / (max - min) * 255
-    re = re.astype(np.uint8)
-    return re
 
-image = cv2.imread('image/sophie_marceau.jpg')
+if __name__ == '__main__':
+    image = cv2.imread('image/sophie_marceau.jpg')
 
-b = image[:, :, 0]
-g = image[:, :, 1]
-r = image[:, :, 2]
+    height, weight = image.shape[:2]
+    b = image[:, :, 0]
+    g = image[:, :, 1]
+    r = image[:, :, 2]
 
-b_re = reconstruct(b)
-g_re = reconstruct(g)
-r_re = reconstruct(r)
+    b_re = reconstruct(b)
+    g_re = reconstruct(g)
+    r_re = reconstruct(r)
 
-color = np.zeros((681, 492, 3), np.uint8)
-print(color.shape)
-color[:, :, 0] = b_re
-color[:, :, 1] = g_re
-color[:, :, 2] = r_re
+    vis = np.zeros((height, weight, 3), np.uint8)
 
-cv2.imshow('old', image)
-cv2.imshow('svd', color)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    vis[:, :, 0] = b_re
+    vis[:, :, 1] = g_re
+    vis[:, :, 2] = r_re
 
+    cv2.imshow('old', image)
+    cv2.imshow('svd', vis)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
