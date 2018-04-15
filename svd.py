@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-num_sv = 50
+num_sv = 100
 
 
 def reconstruct(img):
@@ -39,5 +39,6 @@ if __name__ == '__main__':
 
     cv2.imshow('old', image)
     cv2.imshow('svd', vis)
+    cv2.imwrite('image/sv-{}.png'.format(num_sv), vis)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
